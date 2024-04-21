@@ -1,0 +1,607 @@
+{% extends 'base.html' %}
+
+{% block title %}Login{% endblock %}
+
+{% block styles %}
+<style>
+  body {
+    background-color: #f0f0f0;
+  }
+  .login-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    /* background: #353535; */
+    position: relative;
+  }
+  .card {
+    max-width: 400px;
+    position: absolute;
+    z-index: 1;
+    background: transparent;
+    backdrop-filter: blur(10px);
+    background: #00000070;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    width: 40vw;
+  }
+  .card-header {
+    background-color: #d5d7db37;
+    color: #45f3ff;
+    backdrop-filter: blur(10px);
+    font-size: 24px;
+    font-weight: bold;
+    text-align: center;
+  }
+  .card-body {
+    padding: 30px;
+  }
+  /* button[type=submit] {
+    background-color: #007bff;
+    color: white;
+    font-size: 16px;
+    font-weight: bold;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    width: 100%;
+  } */
+  /* button[type=submit]:hover {
+    background-color: #0062cc;
+  } */
+  .alert-danger {
+    background-color: #f8d7da;
+    color: #721c24;
+    padding: 10px;
+    margin-bottom: 20px;
+    border: 1px solid #f5c6cb;
+    border-radius: 4px;
+  }
+  /* BG */
+  body {
+	background: #090d00;
+}
+
+/* BACKGROUND */
+
+#bg {
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	z-index: -1;
+}
+
+#bg canvas {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+}
+/* Login */
+button {
+  position: relative;
+  width: 11em;
+  height: 4em;
+  outline: none;
+  margin: 0 auto;
+  transition: 0.1s;
+  background-color: transparent;
+  border: none;
+  font-size: 13px;
+  font-weight: bold;
+  color: #45f3ff;
+}
+
+#clip {
+  --color: #45f3ff;
+  position: absolute;
+  top: 0;
+  overflow: hidden;
+  width: 100%;
+  height: 100%;
+  border: 5px double var(--color);
+  box-shadow: inset 0px 0px 15px #45f3ff;
+  -webkit-clip-path: polygon(30% 0%, 70% 0%, 100% 30%, 100% 70%, 70% 100%, 30% 100%, 0% 70%, 0% 30%);
+}
+
+.arrow {
+  position: absolute;
+  transition: 0.2s;
+  background-color: #45f3ff;
+  top: 35%;
+  width: 11%;
+  height: 30%;
+}
+
+#leftArrow {
+  left: -13.5%;
+  -webkit-clip-path: polygon(100% 0, 100% 100%, 0 50%);
+}
+
+#rightArrow {
+  -webkit-clip-path: polygon(100% 49%, 0 0, 0 100%);
+  left: 102%;
+}
+
+button:hover #rightArrow {
+  background-color: #45f3ff;
+  left: -15%;
+  animation: 0.6s ease-in-out both infinite alternate rightArrow8;
+}
+
+button:hover #leftArrow {
+  background-color: #45f3ff;
+  left: 103%;
+  animation: 0.6s ease-in-out both infinite alternate leftArrow8;
+}
+
+.corner {
+  position: absolute;
+  width: 4em;
+  height: 4em;
+  background-color: #45f3ff;
+  box-shadow: inset 1px 1px 8px #45f3ff;
+  transform: scale(1) rotate(45deg);
+  transition: 0.2s;
+}
+
+#rightTop {
+  top: -1.98em;
+  left: 91%;
+}
+
+#leftTop {
+  top: -1.96em;
+  left: -3.0em;
+}
+
+#leftBottom {
+  top: 2.10em;
+  left: -2.15em;
+}
+
+#rightBottom {
+  top: 45%;
+  left: 88%;
+}
+
+button:hover #leftTop {
+  animation: 0.1s ease-in-out 0.05s both changeColor8,
+  0.2s linear 0.4s both lightEffect8;
+}
+
+button:hover #rightTop {
+  animation: 0.1s ease-in-out 0.15s both changeColor8,
+  0.2s linear 0.4s both lightEffect8;
+}
+
+button:hover #rightBottom {
+  animation: 0.1s ease-in-out 0.25s both changeColor8,
+  0.2s linear 0.4s both lightEffect8;
+}
+
+button:hover #leftBottom {
+  animation: 0.1s ease-in-out 0.35s both changeColor8,
+  0.2s linear 0.4s both lightEffect8;
+}
+
+button:hover .corner {
+  transform: scale(1.25) rotate(45deg);
+}
+
+button:hover #clip {
+  animation: 0.2s ease-in-out 0.55s both greenLight8;
+  --color: #27c39f;
+}
+
+@keyframes changeColor8 {
+  from {
+    background-color: #45f3ff;
+  }
+
+  to {
+    background-color: #27c39f;
+  }
+}
+
+@keyframes lightEffect8 {
+  from {
+    box-shadow: 1px 1px 5px #27c39f;
+  }
+
+  to {
+    box-shadow: 0 0 2px #27c39f;
+  }
+}
+
+@keyframes greenLight8 {
+  from {
+  }
+
+  to {
+    box-shadow: inset 0px 0px 32px #27c39f;
+  }
+}
+
+@keyframes leftArrow8 {
+  from {
+    transform: translate(0px);
+  }
+
+  to {
+    transform: translateX(10px);
+  }
+}
+
+@keyframes rightArrow8 {
+  from {
+    transform: translate(0px);
+  }
+
+  to {
+    transform: translateX(-10px);
+  }
+}
+.ButtonContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 20px;
+}
+/* Input Box */
+.inputbox {
+  position: relative;
+  width: 100%;
+}
+
+.inputbox input {
+  position: relative;
+  width: 100%;
+  padding: 20px 10px 10px;
+  background: transparent;
+  outline: none;
+  box-shadow: none;
+  border: none;
+  color: #23242a;
+  font-size: 1em;
+  letter-spacing: 0.05em;
+  transition: 0.5s;
+  z-index: 10;
+}
+
+.inputbox span {
+  position: absolute;
+  left: 0;
+  padding: 20px 10px 10px;
+  font-size: 1em;
+  color: #8f8f8f;
+  letter-spacing: 00.05em;
+  transition: 0.5s;
+  pointer-events: none;
+}
+
+.inputbox input:valid ~span,
+.inputbox input:focus ~span {
+  color: #45f3ff;
+  transform: translateX(-10px) translateY(-34px);
+  font-size: 0,75em;
+}
+
+.inputbox i {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  height: 2px;
+  background: #45f3ff;
+  border-radius: 4px;
+  transition: 0.5s;
+  pointer-events: none;
+  z-index: 9;
+}
+
+.inputbox input:valid ~i,
+.inputbox input:focus ~i {
+  height: 44px;
+}
+
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="login-container">
+  <div id="bg">
+    <canvas></canvas>
+    <canvas></canvas>
+    <canvas></canvas>
+  </div>
+  <div class="card">
+    <div class="card-header">Login</div>
+    <div class="card-body">
+      {% if error_message %}
+        <div class="alert alert-danger" role="alert">{{ error_message }}</div>
+      {% endif %}
+      <form method="post">
+        {% csrf_token %}
+        <!-- Bg -->
+        <!-- Bg -->
+        <!-- <div class="form-group">
+          <label for="username">Username</label>
+          <input type="text" class="form-control" id="username" name="username" required>
+        </div> -->
+      <div class="inputbox">
+          <input  required type="text"  id="username" name="username">
+          <span>Username</span>
+          <i></i>
+      </div>
+      <div class="inputbox">
+          <input  required type="password"  id="password" name="password">
+          <span>Password</span>
+          <i></i>
+      </div>
+        <!-- <div class="form-group">
+          <label for="password">Password</label>
+          <input type="password" class="form-control" id="password" name="password" required>
+        </div> -->
+        <!-- <button type="submit">Login</button> -->
+        <div class="ButtonContainer">
+          <button type="submit">
+            L O G I N
+            <div id="clip">
+              <div id="leftTop" class="corner"></div>
+              <div id="rightBottom" class="corner"></div>
+              <div id="rightTop" class="corner"></div>
+              <div id="leftBottom" class="corner"></div>
+            </div>
+            <span id="rightArrow" class="arrow"></span>
+            <span id="leftArrow" class="arrow"></span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}
+{% block scripts %}
+<script>
+(function($){
+	var canvas = $('#bg').children('canvas'),
+		background = canvas[0],
+		foreground1 = canvas[1],
+		foreground2 = canvas[2],
+		config = {
+			circle: {
+				amount: 18,
+				layer: 3,
+				color: [157, 97, 207],
+				alpha: 0.3
+			},
+			line: {
+				amount: 12,
+				layer: 3,
+				color: [255, 255, 255],
+				alpha: 0.3
+			},
+			speed: 0.5,
+			angle: 20
+		};
+
+	if (background.getContext){
+		var bctx = background.getContext('2d'),
+			fctx1 = foreground1.getContext('2d'),
+			fctx2 = foreground2.getContext('2d'),
+			M = window.Math, // Cached Math
+			degree = config.angle/360*M.PI*2,
+			circles = [],
+			lines = [],
+			wWidth, wHeight, timer;
+		
+		requestAnimationFrame = window.requestAnimationFrame || 
+			window.mozRequestAnimationFrame ||
+			window.webkitRequestAnimationFrame ||
+			window.msRequestAnimationFrame ||
+			window.oRequestAnimationFrame ||
+			function(callback, element) { setTimeout(callback, 1000 / 60); };
+
+		cancelAnimationFrame = window.cancelAnimationFrame ||
+			window.mozCancelAnimationFrame ||
+			window.webkitCancelAnimationFrame ||
+			window.msCancelAnimationFrame ||
+			window.oCancelAnimationFrame ||
+			clearTimeout;
+
+		var setCanvasHeight = function(){
+			wWidth = $(window).width();
+			wHeight = $(window).height(),
+
+			canvas.each(function(){
+				this.width = wWidth;
+				this.height = wHeight;
+			});
+		};
+
+		var drawCircle = function(x, y, radius, color, alpha){
+			var gradient = fctx1.createRadialGradient(x, y, radius, x, y, 0);
+			gradient.addColorStop(0, 'rgba('+color[0]+','+color[1]+','+color[2]+','+alpha+')');
+			gradient.addColorStop(1, 'rgba('+color[0]+','+color[1]+','+color[2]+','+(alpha-0.1)+')');
+
+			fctx1.beginPath();
+			fctx1.arc(x, y, radius, 0, M.PI*2, true);
+			fctx1.fillStyle = gradient;
+			fctx1.fill();
+		};
+
+		var drawLine = function(x, y, width, color, alpha){
+			var endX = x+M.sin(degree)*width,
+				endY = y-M.cos(degree)*width,
+				gradient = fctx2.createLinearGradient(x, y, endX, endY);
+			gradient.addColorStop(0, 'rgba('+color[0]+','+color[1]+','+color[2]+','+alpha+')');
+			gradient.addColorStop(1, 'rgba('+color[0]+','+color[1]+','+color[2]+','+(alpha-0.1)+')');
+
+			fctx2.beginPath();
+			fctx2.moveTo(x, y);
+			fctx2.lineTo(endX, endY);
+			fctx2.lineWidth = 3;
+			fctx2.lineCap = 'round';
+			fctx2.strokeStyle = gradient;
+			fctx2.stroke();
+		};
+
+		var drawBack = function(){
+			bctx.clearRect(0, 0, wWidth, wHeight);
+
+			var gradient = [];
+			
+			gradient[0] = bctx.createRadialGradient(wWidth*0.3, wHeight*0.1, 0, wWidth*0.3, wHeight*0.1, wWidth*0.9);
+			gradient[0].addColorStop(0, 'rgb(0, 26, 77)');
+			gradient[0].addColorStop(1, 'transparent');
+
+			bctx.translate(wWidth, 0);
+			bctx.scale(-1,1);
+			bctx.beginPath();
+			bctx.fillStyle = gradient[0];
+			bctx.fillRect(0, 0, wWidth, wHeight);
+
+			gradient[1] = bctx.createRadialGradient(wWidth*0.1, wHeight*0.1, 0, wWidth*0.3, wHeight*0.1, wWidth);
+			gradient[1].addColorStop(0, 'rgb(0, 150, 240)');
+			gradient[1].addColorStop(0.8, 'transparent');
+
+			bctx.translate(wWidth, 0);
+			bctx.scale(-1,1);
+			bctx.beginPath();
+			bctx.fillStyle = gradient[1];
+			bctx.fillRect(0, 0, wWidth, wHeight);
+
+			gradient[2] = bctx.createRadialGradient(wWidth*0.1, wHeight*0.5, 0, wWidth*0.1, wHeight*0.5, wWidth*0.5);
+			gradient[2].addColorStop(0, 'rgb(40, 20, 105)');
+			gradient[2].addColorStop(1, 'transparent');
+
+			bctx.beginPath();
+			bctx.fillStyle = gradient[2];
+			bctx.fillRect(0, 0, wWidth, wHeight);
+		};
+
+		var animate = function(){
+			var sin = M.sin(degree),
+				cos = M.cos(degree);
+
+			if (config.circle.amount > 0 && config.circle.layer > 0){
+				fctx1.clearRect(0, 0, wWidth, wHeight);
+				for (var i=0, len = circles.length; i<len; i++){
+					var item = circles[i],
+						x = item.x,
+						y = item.y,
+						radius = item.radius,
+						speed = item.speed;
+
+					if (x > wWidth + radius){
+						x = -radius;
+					} else if (x < -radius){
+						x = wWidth + radius
+					} else {
+						x += sin*speed;
+					}
+
+					if (y > wHeight + radius){
+						y = -radius;
+					} else if (y < -radius){
+						y = wHeight + radius;
+					} else {
+						y -= cos*speed;
+					}
+
+					item.x = x;
+					item.y = y;
+					drawCircle(x, y, radius, item.color, item.alpha);
+				}
+			}
+
+			if (config.line.amount > 0 && config.line.layer > 0){
+				fctx2.clearRect(0, 0, wWidth, wHeight);
+				for (var j=0, len = lines.length; j<len; j++){
+					var item = lines[j],
+						x = item.x,
+						y = item.y,
+						width = item.width,
+						speed = item.speed;
+
+					if (x > wWidth + width * sin){
+						x = -width * sin;
+					} else if (x < -width * sin){
+						x = wWidth + width * sin;
+					} else {
+						x += sin*speed;
+					}
+
+					if (y > wHeight + width * cos){
+						y = -width * cos;
+					} else if (y < -width * cos){
+						y = wHeight + width * cos;
+					} else {
+						y -= cos*speed;
+					}
+					
+					item.x = x;
+					item.y = y;
+					drawLine(x, y, width, item.color, item.alpha);
+				}
+			}
+
+			timer = requestAnimationFrame(animate);
+		};
+
+		var createItem = function(){
+			circles = [];
+			lines = [];
+
+			if (config.circle.amount > 0 && config.circle.layer > 0){
+				for (var i=0; i<config.circle.amount/config.circle.layer; i++){
+					for (var j=0; j<config.circle.layer; j++){
+						circles.push({
+							x: M.random() * wWidth,
+							y: M.random() * wHeight,
+							radius: M.random()*(20+j*5)+(20+j*5),
+							color: config.circle.color,
+							alpha: M.random()*0.2+(config.circle.alpha-j*0.1),
+							speed: config.speed*(1+j*0.5)
+						});
+					}
+				}
+			}
+
+			if (config.line.amount > 0 && config.line.layer > 0){
+				for (var m=0; m<config.line.amount/config.line.layer; m++){
+					for (var n=0; n<config.line.layer; n++){
+						lines.push({
+							x: M.random() * wWidth,
+							y: M.random() * wHeight,
+							width: M.random()*(20+n*5)+(20+n*5),
+							color: config.line.color,
+							alpha: M.random()*0.2+(config.line.alpha-n*0.1),
+							speed: config.speed*(1+n*0.5)
+						});
+					}
+				}
+			}
+
+			cancelAnimationFrame(timer);
+			timer = requestAnimationFrame(animate);
+			drawBack();
+		};
+
+		$(document).ready(function(){
+			setCanvasHeight();
+			createItem();
+		});
+		$(window).resize(function(){
+			setCanvasHeight();
+			createItem();
+		});
+	}
+})(jQuery);
+</script>
+{% endblock %}

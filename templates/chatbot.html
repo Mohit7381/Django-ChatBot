@@ -1,0 +1,598 @@
+{% extends 'base.html' %}
+
+{% block styles %}
+<style>
+    body, html {
+      height: 100%;
+    }
+    .card{
+      position: absolute;
+      width: 100vw;
+      height: 100vh;
+      background: transparent;
+    }
+    .messages-box {
+      flex: 1;
+      overflow-y: auto;
+    }
+
+    .messages-list {
+      padding-left: 0;
+    }
+
+    .message {
+      margin-bottom: 15px;
+      list-style: none;
+    }
+
+    .message-text {
+      padding: 10px;
+      border-radius: 5px;
+    }
+
+    .sent {
+      background-color: #dcf8c6;
+      align-self: flex-end;
+    }
+
+    .received {
+      background-color: #f1f0f0;
+      align-self: flex-start;
+    }
+
+    .message-form {
+      display: flex;
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      padding: 10px;
+      background-color: #292a2b71;
+      backdrop-filter: blur(10px);
+      box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .message-input {
+      flex: 1;
+      border-radius: 0;
+      border-right: none;
+    }
+
+    .btn-send {
+      border-radius: 0;
+    }
+
+    .chat-container {
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+    }
+
+       /* BG */
+   body {
+	background: #090d0084;
+}
+
+/* BACKGROUND */
+
+#bg {
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	z-index: -1;
+}
+
+#bg canvas {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+}
+/* Measssage Box */
+.messageBox {
+  width: fit-content;
+  height: 40px;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #2d2d2d;
+  padding: 0 15px;
+  border-radius: 10px;
+  border: 1px solid rgb(63, 63, 63);
+}
+.messageBox:focus-within {
+  border: 1px solid rgb(110, 110, 110);
+}
+.fileUploadWrapper {
+  width: fit-content;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+#file {
+  display: none;
+}
+.fileUploadWrapper label {
+  cursor: pointer;
+  width: fit-content;
+  height: fit-content;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+.fileUploadWrapper label svg {
+  height: 18px;
+}
+.fileUploadWrapper label svg path {
+  transition: all 0.3s;
+}
+.fileUploadWrapper label svg circle {
+  transition: all 0.3s;
+}
+.fileUploadWrapper label:hover svg path {
+  stroke: #fff;
+}
+.fileUploadWrapper label:hover svg circle {
+  stroke: #fff;
+  fill: #3c3c3c;
+}
+.fileUploadWrapper label:hover .tooltip {
+  display: block;
+  opacity: 1;
+}
+.tooltip {
+  position: absolute;
+  top: -40px;
+  display: none;
+  opacity: 0;
+  color: white;
+  font-size: 10px;
+  text-wrap: nowrap;
+  background-color: #000;
+  padding: 6px 10px;
+  border: 1px solid #3c3c3c;
+  border-radius: 5px;
+  box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.596);
+  transition: all 0.3s;
+}
+#messageInput {
+  width: 200px;
+  height: 100%;
+  background-color: transparent;
+  outline: none;
+  border: none;
+  padding-left: 10px;
+  color: white;
+}
+#messageInput:focus ~ #sendButton svg path,
+#messageInput:valid ~ #sendButton svg path {
+  fill: #3c3c3c;
+  stroke: white;
+}
+
+#sendButton {
+  width: fit-content;
+  height: 100%;
+  background-color: transparent;
+  outline: none;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+#sendButton svg {
+  height: 18px;
+  transition: all 0.3s;
+}
+#sendButton svg path {
+  transition: all 0.3s;
+}
+#sendButton:hover svg path {
+  fill: #3c3c3c;
+  stroke: white;
+}
+
+  </style>
+{% endblock %}
+
+
+{% block content %}
+<div class="chat-container">
+  <div id="bg">
+    <canvas></canvas>
+    <canvas></canvas>
+    <canvas></canvas>
+  </div>
+  <div class="card flex-grow-1">
+    <div class="card-header">Chat</div>
+    {% if user.is_authenticated %}
+    <div class="card-header"><b>Welcome, {{user.username}}</b>   <a style="color: yellow;" href="logout">Logout</a></div>
+    {% else %}
+    <div class="card-header"><a style="color: yellow" href="login">Login</a>   <a style="color: yellow;" href="register">Register</a></div>
+    {% endif %}
+    <div class="card-body messages-box">
+      
+      <ul class="list-unstyled messages-list">
+        
+        <!-- <li class="message received">
+          <div class="message-text">
+            <div class="message-sender">
+              <b>AI Chatbot</b>
+            </div>
+            <div class="message-content">
+              Hi {{user.username}}, I am your AI Chatbot, you can ask me anything.
+            </div>
+          </div>
+        </li> -->
+
+        {% for chat in chats %}
+          {% if chat.user == request.user %}
+
+            <li class="message sent">
+          <div class="message-text">
+            <div class="message-sender">
+              <b>You</b>
+            </div>
+            <div class="message-content">
+              {{chat.message}}
+            </div>
+          </div>
+        </li>
+
+        <li class="message received">
+          <div class="message-text">
+            <div class="message-sender">
+              <b>AI Chatbot</b>
+            </div>
+            <div class="message-content">
+              {{chat.response}}
+            </div>
+          </div>
+        </li>
+
+          {% endif %}
+        {% endfor %}
+        
+      </ul>
+      
+    </div>
+    <br><br>
+    <br><br>
+    <br><br>
+  </div>
+  <form class="message-form">
+    {%csrf_token%}
+    <!-- <div class="input-group">
+      <input type="text" class="form-control message-input" placeholder="Type your message...">
+      <div class="input-group-append">
+        <button type="submit" class="btn btn-primary btn-send">Send</button>
+      </div>
+    </div> -->
+    <div class="messageBox">
+      <input required="" placeholder="Type your message..." type="text" id="messageInput" class="message-input" />
+      <button type="submit" id="sendButton">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 664 663">
+          <path
+            fill="none"
+            d="M646.293 331.888L17.7538 17.6187L155.245 331.888M646.293 331.888L17.753 646.157L155.245 331.888M646.293 331.888L318.735 330.228L155.245 331.888"
+          ></path>
+          <path
+            stroke-linejoin="round"
+            stroke-linecap="round"
+            stroke-width="33.67"
+            stroke="#6c6c6c"
+            d="M646.293 331.888L17.7538 17.6187L155.245 331.888M646.293 331.888L17.753 646.157L155.245 331.888M646.293 331.888L318.735 330.228L155.245 331.888"
+          ></path>
+        </svg>
+      </button>
+    </div>
+  </form>
+</div>
+
+<script>
+  const messagesList = document.querySelector('.messages-list');
+  const messageForm = document.querySelector('.message-form');
+  const messageInput = document.querySelector('.message-input');
+
+  messageForm.addEventListener('submit', (event) => {
+    event.preventDefault();
+
+    const message = messageInput.value.trim();
+    if (message.length === 0) {
+      return;
+    }
+
+    const messageItem = document.createElement('li');
+    messageItem.classList.add('message', 'sent');
+    messageItem.innerHTML = `
+        <div class="message-text">
+            <div class="message-sender">
+                <b>You</b>
+            </div>
+            <div class="message-content">
+                ${message}
+            </div>
+        </div>`;
+    messagesList.appendChild(messageItem);
+
+    messageInput.value = '';
+
+    fetch('', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: new URLSearchParams({
+        'csrfmiddlewaretoken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+        'message': message
+      })
+    })
+      .then(response => response.json())
+      .then(data => {
+        const response = data.response;
+        const messageItem = document.createElement('li');
+        messageItem.classList.add('message', 'received');
+        messageItem.innerHTML = `
+        <div class="message-text">
+            <div class="message-sender">
+              <b>AI Chatbot</b>
+            </div>
+            <div class="message-content">
+                ${response}
+            </div>
+        </div>
+          `;
+        messagesList.appendChild(messageItem);
+      });
+  });
+  // Background
+  </script>
+  <script>
+
+  
+  (function($){
+	var canvas = $('#bg').children('canvas'),
+		background = canvas[0],
+		foreground1 = canvas[1],
+		foreground2 = canvas[2],
+		config = {
+			circle: {
+				amount: 18,
+				layer: 3,
+				color: [157, 97, 207],
+				alpha: 0.3
+			},
+			line: {
+				amount: 12,
+				layer: 3,
+				color: [255, 255, 255],
+				alpha: 0.3
+			},
+			speed: 0.5,
+			angle: 20
+		};
+
+	if (background.getContext){
+		var bctx = background.getContext('2d'),
+			fctx1 = foreground1.getContext('2d'),
+			fctx2 = foreground2.getContext('2d'),
+			M = window.Math, // Cached Math
+			degree = config.angle/360*M.PI*2,
+			circles = [],
+			lines = [],
+			wWidth, wHeight, timer;
+		
+		requestAnimationFrame = window.requestAnimationFrame || 
+			window.mozRequestAnimationFrame ||
+			window.webkitRequestAnimationFrame ||
+			window.msRequestAnimationFrame ||
+			window.oRequestAnimationFrame ||
+			function(callback, element) { setTimeout(callback, 1000 / 60); };
+
+		cancelAnimationFrame = window.cancelAnimationFrame ||
+			window.mozCancelAnimationFrame ||
+			window.webkitCancelAnimationFrame ||
+			window.msCancelAnimationFrame ||
+			window.oCancelAnimationFrame ||
+			clearTimeout;
+
+		var setCanvasHeight = function(){
+			wWidth = $(window).width();
+			wHeight = $(window).height(),
+
+			canvas.each(function(){
+				this.width = wWidth;
+				this.height = wHeight;
+			});
+		};
+
+		var drawCircle = function(x, y, radius, color, alpha){
+			var gradient = fctx1.createRadialGradient(x, y, radius, x, y, 0);
+			gradient.addColorStop(0, 'rgba('+color[0]+','+color[1]+','+color[2]+','+alpha+')');
+			gradient.addColorStop(1, 'rgba('+color[0]+','+color[1]+','+color[2]+','+(alpha-0.1)+')');
+
+			fctx1.beginPath();
+			fctx1.arc(x, y, radius, 0, M.PI*2, true);
+			fctx1.fillStyle = gradient;
+			fctx1.fill();
+		};
+
+		var drawLine = function(x, y, width, color, alpha){
+			var endX = x+M.sin(degree)*width,
+				endY = y-M.cos(degree)*width,
+				gradient = fctx2.createLinearGradient(x, y, endX, endY);
+			gradient.addColorStop(0, 'rgba('+color[0]+','+color[1]+','+color[2]+','+alpha+')');
+			gradient.addColorStop(1, 'rgba('+color[0]+','+color[1]+','+color[2]+','+(alpha-0.1)+')');
+
+			fctx2.beginPath();
+			fctx2.moveTo(x, y);
+			fctx2.lineTo(endX, endY);
+			fctx2.lineWidth = 3;
+			fctx2.lineCap = 'round';
+			fctx2.strokeStyle = gradient;
+			fctx2.stroke();
+		};
+
+		var drawBack = function(){
+			bctx.clearRect(0, 0, wWidth, wHeight);
+
+			var gradient = [];
+			
+			gradient[0] = bctx.createRadialGradient(wWidth*0.3, wHeight*0.1, 0, wWidth*0.3, wHeight*0.1, wWidth*0.9);
+			gradient[0].addColorStop(0, 'rgb(0, 26, 77)');
+			gradient[0].addColorStop(1, 'transparent');
+
+			bctx.translate(wWidth, 0);
+			bctx.scale(-1,1);
+			bctx.beginPath();
+			bctx.fillStyle = gradient[0];
+			bctx.fillRect(0, 0, wWidth, wHeight);
+
+			gradient[1] = bctx.createRadialGradient(wWidth*0.1, wHeight*0.1, 0, wWidth*0.3, wHeight*0.1, wWidth);
+			gradient[1].addColorStop(0, 'rgb(0, 150, 240)');
+			gradient[1].addColorStop(0.8, 'transparent');
+
+			bctx.translate(wWidth, 0);
+			bctx.scale(-1,1);
+			bctx.beginPath();
+			bctx.fillStyle = gradient[1];
+			bctx.fillRect(0, 0, wWidth, wHeight);
+
+			gradient[2] = bctx.createRadialGradient(wWidth*0.1, wHeight*0.5, 0, wWidth*0.1, wHeight*0.5, wWidth*0.5);
+			gradient[2].addColorStop(0, 'rgb(40, 20, 105)');
+			gradient[2].addColorStop(1, 'transparent');
+
+			bctx.beginPath();
+			bctx.fillStyle = gradient[2];
+			bctx.fillRect(0, 0, wWidth, wHeight);
+		};
+
+		var animate = function(){
+			var sin = M.sin(degree),
+				cos = M.cos(degree);
+
+			if (config.circle.amount > 0 && config.circle.layer > 0){
+				fctx1.clearRect(0, 0, wWidth, wHeight);
+				for (var i=0, len = circles.length; i<len; i++){
+					var item = circles[i],
+						x = item.x,
+						y = item.y,
+						radius = item.radius,
+						speed = item.speed;
+
+					if (x > wWidth + radius){
+						x = -radius;
+					} else if (x < -radius){
+						x = wWidth + radius
+					} else {
+						x += sin*speed;
+					}
+
+					if (y > wHeight + radius){
+						y = -radius;
+					} else if (y < -radius){
+						y = wHeight + radius;
+					} else {
+						y -= cos*speed;
+					}
+
+					item.x = x;
+					item.y = y;
+					drawCircle(x, y, radius, item.color, item.alpha);
+				}
+			}
+
+			if (config.line.amount > 0 && config.line.layer > 0){
+				fctx2.clearRect(0, 0, wWidth, wHeight);
+				for (var j=0, len = lines.length; j<len; j++){
+					var item = lines[j],
+						x = item.x,
+						y = item.y,
+						width = item.width,
+						speed = item.speed;
+
+					if (x > wWidth + width * sin){
+						x = -width * sin;
+					} else if (x < -width * sin){
+						x = wWidth + width * sin;
+					} else {
+						x += sin*speed;
+					}
+
+					if (y > wHeight + width * cos){
+						y = -width * cos;
+					} else if (y < -width * cos){
+						y = wHeight + width * cos;
+					} else {
+						y -= cos*speed;
+					}
+					
+					item.x = x;
+					item.y = y;
+					drawLine(x, y, width, item.color, item.alpha);
+				}
+			}
+
+			timer = requestAnimationFrame(animate);
+		};
+
+		var createItem = function(){
+			circles = [];
+			lines = [];
+
+			if (config.circle.amount > 0 && config.circle.layer > 0){
+				for (var i=0; i<config.circle.amount/config.circle.layer; i++){
+					for (var j=0; j<config.circle.layer; j++){
+						circles.push({
+							x: M.random() * wWidth,
+							y: M.random() * wHeight,
+							radius: M.random()*(20+j*5)+(20+j*5),
+							color: config.circle.color,
+							alpha: M.random()*0.2+(config.circle.alpha-j*0.1),
+							speed: config.speed*(1+j*0.5)
+						});
+					}
+				}
+			}
+
+			if (config.line.amount > 0 && config.line.layer > 0){
+				for (var m=0; m<config.line.amount/config.line.layer; m++){
+					for (var n=0; n<config.line.layer; n++){
+						lines.push({
+							x: M.random() * wWidth,
+							y: M.random() * wHeight,
+							width: M.random()*(20+n*5)+(20+n*5),
+							color: config.line.color,
+							alpha: M.random()*0.2+(config.line.alpha-n*0.1),
+							speed: config.speed*(1+n*0.5)
+						});
+					}
+				}
+			}
+
+			cancelAnimationFrame(timer);
+			timer = requestAnimationFrame(animate);
+			drawBack();
+		};
+
+		$(document).ready(function(){
+			setCanvasHeight();
+			createItem();
+		});
+		$(window).resize(function(){
+			setCanvasHeight();
+			createItem();
+		});
+	}
+})(jQuery);
+</script>
+{% endblock %}
